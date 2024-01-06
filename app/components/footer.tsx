@@ -26,10 +26,10 @@ export default function FooterSimple() {
             <Container className={classes.inner}>
                 <Title>Thesis</Title>
                 <Group className={classes.links}>
-                    <Text c="dimmed" size="sm">
+                    {/* <Text c="dimmed" size="sm">
                         Developed by: Evan Bonso, Charleslexcel Mendoza and
                         George Vincent Peña
-                    </Text>
+                    </Text> */}
                 </Group>
             </Container>
         </div>
