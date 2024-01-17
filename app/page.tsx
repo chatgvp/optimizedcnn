@@ -10,6 +10,7 @@ import {
     Title,
     Text,
     Image,
+    Loader,
 } from "@mantine/core"
 import BaseDemo from "./components/dropzone"
 import { useState } from "react"
@@ -28,6 +29,7 @@ interface ClassificationResults {
 }
 
 export default function Home() {
+    const [loading, setLoading] = useState(false)
     const [selectedFile, setSelectedFile] = useState(null as File | null)
     const [classificationResults, setClassificationResults] =
         useState<ClassificationResults>({
@@ -40,17 +42,21 @@ export default function Home() {
     }
 
     const handleClassifyClick = () => {
+        console.log("clicked")
+        setLoading(true)
         if (selectedFile) {
             const formData = new FormData()
             formData.append("file", selectedFile)
-
+            console.log("set clicked")
             fetch("https://optimizecnn-backend.onrender.com/classify_music/", {
                 method: "POST",
                 body: formData,
             })
                 .then((response) => response.json())
                 .then((data: ClassificationResults) => {
+                    console.log("set clicked")
                     setClassificationResults(data)
+                    setLoading(false)
                 })
                 .catch((error) => {
                     console.error("API Error:", error)
@@ -131,7 +137,9 @@ export default function Home() {
                     </Card>
                 </Grid.Col>
             </Grid>
-            <Button onClick={handleClassifyClick}>Classify</Button>
+            <Button onClick={handleClassifyClick} loading={loading}>
+                Classify
+            </Button>
         </Container>
     )
 }
