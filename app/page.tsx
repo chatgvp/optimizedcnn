@@ -11,58 +11,127 @@ import {
     Text,
     Image,
 } from "@mantine/core"
-import DropzoneButton from "./components/dropzone"
+import BaseDemo from "./components/dropzone"
+import { useState } from "react"
+
+// ... (your existing imports)
+
+interface ClassificationResults {
+    result_optimize_cnn: {
+        predicted_genre: string
+        predicted_percentages: Record<string, number>
+    } | null
+    result_cnn: {
+        predicted_genre: string
+        predicted_percentages: Record<string, number>
+    } | null
+}
+
 export default function Home() {
+    const [selectedFile, setSelectedFile] = useState(null as File | null)
+    const [classificationResults, setClassificationResults] =
+        useState<ClassificationResults>({
+            result_optimize_cnn: null,
+            result_cnn: null,
+        })
+
+    const handleFileDrop = (file: File) => {
+        setSelectedFile(file)
+    }
+
+    const handleClassifyClick = () => {
+        if (selectedFile) {
+            const formData = new FormData()
+            formData.append("file", selectedFile)
+
+            fetch("https://optimizecnn-backend.onrender.com/classify_music/", {
+                method: "POST",
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((data: ClassificationResults) => {
+                    setClassificationResults(data)
+                })
+                .catch((error) => {
+                    console.error("API Error:", error)
+                })
+        }
+    }
+
+    const renderGenreInfo = (predictedGenres: Record<string, number>) => {
+        // Convert predictedGenres into an array of objects
+        const genreArray = Object.entries(predictedGenres).map(
+            ([genre, percentage]) => ({ genre, percentage })
+        )
+
+        // Sort the array by percentage in descending order
+        genreArray.sort((a, b) => b.percentage - a.percentage)
+
+        // Render the sorted genres
+        return genreArray.map(({ genre, percentage }) => (
+            <Group key={genre}>
+                <Text fw={700}>{genre}:</Text>
+                <Text size="sm" c="dimmed">
+                    {percentage.toFixed(2)}%
+                </Text>
+            </Group>
+        ))
+    }
+
     return (
         <Container pt="xl">
             <Center>
-                <DropzoneButton />
+                <BaseDemo onFileDrop={handleFileDrop} />
             </Center>
             <br />
             <Grid>
                 <Grid.Col span={6}>
                     <Card shadow="sm" padding="lg" radius="md" withBorder>
                         <Title>Optimized CNN</Title>
-                        <Group>
-                            <Text fw={700}>Music Genre:</Text>
-                            <Badge color="pink">Jazz</Badge>
-                        </Group>
-                        <Group>
-                            <Text fw={700}>Accuracy:</Text>
-                            <Text size="sm" c="dimmed">
-                                69%
-                            </Text>
-                        </Group>
-                        <Group>
-                            <Text fw={700}>Speed:</Text>
-                            <Text size="sm" c="dimmed">
-                                7.3 ms
-                            </Text>
-                        </Group>
+                        {classificationResults.result_optimize_cnn && (
+                            <>
+                                <Group>
+                                    <Text fw={700}>Music Genre:</Text>
+                                    <Badge color="pink">
+                                        {
+                                            classificationResults
+                                                .result_optimize_cnn
+                                                .predicted_genre
+                                        }
+                                    </Badge>
+                                </Group>
+                                {renderGenreInfo(
+                                    classificationResults.result_optimize_cnn
+                                        .predicted_percentages
+                                )}
+                            </>
+                        )}
                     </Card>
                 </Grid.Col>
                 <Grid.Col span={6}>
                     <Card shadow="sm" padding="lg" radius="md" withBorder>
                         <Title>CNN</Title>
-                        <Group>
-                            <Text fw={700}>Music Genre:</Text>
-                            <Badge color="pink">Jazz</Badge>
-                        </Group>
-                        <Group>
-                            <Text fw={700}>Accuracy:</Text>
-                            <Text size="sm" c="dimmed">
-                                60%
-                            </Text>
-                        </Group>
-                        <Group>
-                            <Text fw={700}>Speed:</Text>
-                            <Text size="sm" c="dimmed">
-                                9.2 ms
-                            </Text>
-                        </Group>
+                        {classificationResults.result_cnn && (
+                            <>
+                                <Group>
+                                    <Text fw={700}>Music Genre:</Text>
+                                    <Badge color="pink">
+                                        {
+                                            classificationResults.result_cnn
+                                                .predicted_genre
+                                        }
+                                    </Badge>
+                                </Group>
+                                {renderGenreInfo(
+                                    classificationResults.result_cnn
+                                        .predicted_percentages
+                                )}
+                            </>
+                        )}
                     </Card>
                 </Grid.Col>
             </Grid>
+            <Button onClick={handleClassifyClick}>Classify</Button>
         </Container>
     )
 }

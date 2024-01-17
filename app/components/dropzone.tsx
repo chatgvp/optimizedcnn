@@ -1,55 +1,75 @@
-import { useRef } from "react"
-import { Text, Group, Button, rem, useMantineTheme } from "@mantine/core"
-import { Dropzone, MIME_TYPES } from "@mantine/dropzone"
-import { FaCheckCircle, FaCloudUploadAlt, FaTimesCircle } from "react-icons/fa"
-import classes from "@/app/styles/DropzoneButton.module.css"
+import { Group, Text, rem } from "@mantine/core"
+import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react"
+import { Dropzone, DropzoneProps } from "@mantine/dropzone"
+import { useState } from "react"
 
-export default function DropzoneButton() {
-    const theme = useMantineTheme()
-    const openRef = useRef<() => void>(null)
-
+export default function BaseDemo(
+    props: Partial<DropzoneProps & { onFileDrop: (file: File) => void }>
+) {
+    const [selectedFileName, setSelectedFileName] = useState(null)
+    const handleFileDrop = (files: any) => {
+        if (props.onFileDrop) {
+            props.onFileDrop(files[0])
+            setSelectedFileName(files[0].name)
+        }
+    }
     return (
-        <div className={classes.wrapper}>
-            <Dropzone
-                openRef={openRef}
-                onDrop={() => {}}
-                className={classes.dropzone}
-                radius="md"
-                accept={[MIME_TYPES.pdf]}
-                maxSize={30 * 1024 ** 2}>
-                <div>
-                    <Group justify="center">
+        <Dropzone onDrop={handleFileDrop}>
+            <Group
+                justify="center"
+                gap="xl"
+                mih={220}
+                style={{ pointerEvents: "none" }}>
+                {/* Display the selected file name if available */}
+                {selectedFileName ? (
+                    <Text size="xl" inline>
+                        {selectedFileName}
+                    </Text>
+                ) : (
+                    <>
                         <Dropzone.Accept>
-                            <FaCheckCircle
-                                style={{ width: rem(50), height: rem(50) }}
-                                color={theme.colors.blue[6]}
+                            <IconUpload
+                                style={{
+                                    width: rem(52),
+                                    height: rem(52),
+                                    color: "var(--mantine-color-blue-6)",
+                                }}
+                                stroke={1.5}
                             />
                         </Dropzone.Accept>
                         <Dropzone.Reject>
-                            <FaTimesCircle
-                                style={{ width: rem(50), height: rem(50) }}
-                                color={theme.colors.red[6]}
+                            <IconX
+                                style={{
+                                    width: rem(52),
+                                    height: rem(52),
+                                    color: "var(--mantine-color-red-6)",
+                                }}
+                                stroke={1.5}
                             />
                         </Dropzone.Reject>
                         <Dropzone.Idle>
-                            <FaCloudUploadAlt
-                                style={{ width: rem(50), height: rem(50) }}
+                            <IconPhoto
+                                style={{
+                                    width: rem(52),
+                                    height: rem(52),
+                                    color: "var(--mantine-color-dimmed)",
+                                }}
+                                stroke={1.5}
                             />
                         </Dropzone.Idle>
-                    </Group>
-                    <Text ta="center" fw={700} fz="lg" mt="xl">
-                        <Dropzone.Accept>Drop Music here</Dropzone.Accept>
-                        <Dropzone.Reject>
-                            Pdf file less than 30mb
-                        </Dropzone.Reject>
-                        <Dropzone.Idle>Upload Music here</Dropzone.Idle>
-                    </Text>
-                    <Text ta="center" fz="sm" mt="xs" c="dimmed">
-                        Drag&apos;n&apos;drop music files here to classify
-                        genre.
-                    </Text>
-                </div>
-            </Dropzone>
-        </div>
+
+                        <div>
+                            <Text size="xl" inline>
+                                Drag images here or click to select files
+                            </Text>
+                            <Text size="sm" c="dimmed" inline mt={7}>
+                                Attach as many files as you like, each file
+                                should not exceed 5mb
+                            </Text>
+                        </div>
+                    </>
+                )}
+            </Group>
+        </Dropzone>
     )
 }
