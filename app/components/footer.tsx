@@ -30,6 +30,7 @@ export default function FooterSimple() {
                         Developed by: Evan Bonso, Charleslexcel Mendoza and
                         George Vincent Peña
                     </Text> */}
+                    footer ni
                 </Group>
             </Container>
         </div>

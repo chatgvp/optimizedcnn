@@ -48,7 +48,7 @@ export default function Home() {
             const formData = new FormData()
             formData.append("file", selectedFile)
             console.log("set clicked")
-            fetch("https://optimizecnn-backend.onrender.com/classify_music/", {
+            fetch("http://127.0.0.1:8000/classify_music/", {
                 method: "POST",
                 body: formData,
             })
