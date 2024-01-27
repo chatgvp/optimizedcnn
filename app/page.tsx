@@ -44,11 +44,16 @@ export default function Home() {
     const handleClassifyClick = () => {
         console.log("clicked")
         setLoading(true)
+        const endpoint = "https://optimizecnn-backend.onrender.com"
+
         if (selectedFile) {
             const formData = new FormData()
             formData.append("file", selectedFile)
+
             console.log("set clicked")
-            fetch("http://127.0.0.1:8000/classify_music/", {
+
+            fetch(`${endpoint}/classify_music/`, {
+                // Use backticks to interpolate the variable
                 method: "POST",
                 body: formData,
             })
