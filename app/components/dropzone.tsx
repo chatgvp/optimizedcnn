@@ -1,5 +1,5 @@
 import { Group, Text, rem } from "@mantine/core"
-import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react"
+import { IconUpload, IconMusic, IconX } from "@tabler/icons-react" // Changed IconPhoto to IconMusic
 import { Dropzone, DropzoneProps } from "@mantine/dropzone"
 import { useState } from "react"
 
@@ -48,7 +48,7 @@ export default function BaseDemo(
                             />
                         </Dropzone.Reject>
                         <Dropzone.Idle>
-                            <IconPhoto
+                            <IconMusic // Changed IconPhoto to IconMusic
                                 style={{
                                     width: rem(52),
                                     height: rem(52),
@@ -60,7 +60,8 @@ export default function BaseDemo(
 
                         <div>
                             <Text size="xl" inline>
-                                Drag images here or click to select files
+                                Drag audio files here or click to select files{" "}
+                                {/* Changed text for audio */}
                             </Text>
                             <Text size="sm" c="dimmed" inline mt={7}>
                                 Attach as many files as you like, each file
